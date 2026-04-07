@@ -1263,6 +1263,7 @@ h1, h2, h3, .pixel-font {
   /* Board fills full width */
   .board-area {
     width: 100%;
+    max-width: none;
     overflow: hidden;
   }
 
