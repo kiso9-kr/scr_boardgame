@@ -466,11 +466,13 @@ h1, h2, h3, .pixel-font {
   gap: 4px;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 /* Board Area */
 .board-area {
-  flex: 0 0 auto;
+  flex: 1 1 0;
+  min-width: 0;
   background: var(--win-bg);
   box-shadow: var(--border-sunken);
   padding: 0;

@@ -257,18 +257,6 @@ function placeTokens() {
   const scaleX = img.offsetWidth  / img.naturalWidth;
   const scaleY = img.offsetHeight / img.naturalHeight;
 
-  // Match game-header width to map+panel and center them (desktop only)
-  const rightPanel = document.querySelector('.right-panel');
-  const gameHeader = document.querySelector('.game-header');
-  const gameMain = document.querySelector('.game-main');
-  if (window.innerWidth > 768) {
-    const totalW = img.offsetWidth + 4 + (rightPanel ? rightPanel.offsetWidth : 234);
-    if (gameHeader) gameHeader.style.width = totalW + 'px';
-    if (gameMain) gameMain.style.width = totalW + 'px';
-  } else {
-    if (gameHeader) gameHeader.style.width = '';
-    if (gameMain) gameMain.style.width = '';
-  }
 
   gameState.players.forEach((player, pi) => {
     let token = document.getElementById(`token-p${pi}`);
