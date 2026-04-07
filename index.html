@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이태원게임 - ITAEWON GAME</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ======= INTRO SCREEN ======= -->
+  <div id="intro-screen" class="screen active">
+    <h1 class="intro-title pixel-font" id="intro-title">이태원게임</h1>
+    <div class="intro-text" id="intro-text"></div>
+    <div class="intro-options">
+      <div class="option-group">
+        <label id="label-language">언어 선택</label>
+        <div class="option-buttons" id="language-buttons">
+          <button class="btn selected" data-lang="ko" onclick="selectLanguage('ko')">한국어</button>
+          <button class="btn" data-lang="en" onclick="selectLanguage('en')">English</button>
+        </div>
+      </div>
+      <div class="option-group">
+        <label id="label-players"></label>
+        <div class="option-buttons" id="player-buttons">
+          <button class="btn" data-count="2" onclick="selectPlayerCount(2)">2</button>
+          <button class="btn" data-count="3" onclick="selectPlayerCount(3)">3</button>
+          <button class="btn" data-count="4" onclick="selectPlayerCount(4)">4</button>
+          <button class="btn" data-count="5" onclick="selectPlayerCount(5)">5</button>
+        </div>
+      </div>
+      <button class="btn btn-pink btn-large" id="btn-start" onclick="goToPathSelect()" disabled>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======= PATH SELECT SCREEN ======= -->
+  <div id="path-screen" class="screen">
+    <h2 class="pixel-font" id="path-title" style="color: var(--win-white); margin-bottom: 8px; font-size: 1em;"></h2>
+    <p id="path-subtitle" class="path-subtitle"></p>
+    <div class="path-selection" id="path-selection"></div>
+    <button class="btn btn-green btn-large" id="btn-confirm-path" onclick="confirmPaths()" disabled></button>
+  </div>
+
+  <!-- ======= HOW TO PLAY POPUP ======= -->
+  <div id="howtoplay-overlay" class="popup-overlay">
+    <div class="popup-card animate-in" id="howtoplay-card">
+      <div class="popup-header">
+        <span class="card-number" id="card-number"></span>
+        <h2 id="howtoplay-title"></h2>
+        <button class="btn popup-close-btn" id="btn-close-howtoplay" onclick="goBackFromHowToPlay()" style="display:none;">✕</button>
+      </div>
+      <div class="card-text" id="howtoplay-text"></div>
+      <div class="popup-nav">
+        <div class="nav-left">
+          <button class="btn" id="btn-prev-card" onclick="prevCard()"></button>
+          <div id="chaos-info-btn-container"></div>
+        </div>
+        <div class="nav-center">
+          <button class="btn" id="btn-skip-howtoplay" onclick="closeHowToPlay()" style="font-size:0.9em; color: var(--win-dark-shadow);"></button>
+        </div>
+        <div class="nav-right">
+          <button class="btn btn-pink" id="btn-next-card" onclick="nextCard()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= CHAOS INFO SUB-POPUP ======= -->
+  <div id="chaosinfo-overlay" class="popup-overlay" style="z-index: 1100;">
+    <div class="popup-card animate-in" style="max-height: 85vh;">
+      <h2 style="color: var(--neon-pink);">Chaos Card</h2>
+      <div class="card-text" id="chaosinfo-text"></div>
+      <div class="popup-nav" style="justify-content: center;">
+        <button class="btn" onclick="closeChaosInfo()"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= GAME SCREEN ======= -->
+  <div id="game-screen" class="screen">
+    <div class="game-header">
+      <div class="turn-indicator" id="turn-indicator"></div>
+      <button class="btn" style="font-size: 0.8em;" onclick="showHowToPlay()">게임설명 다시보기</button>
+    </div>
+    <div class="game-main">
+      <div class="board-area" id="board-area"></div>
+      <div class="right-panel">
+        <div class="side-panel" id="side-panel"></div>
+        <div class="action-area" id="action-area">
+          <div class="dice-container">
+            <div class="dice" id="dice-display">Game Rule</div>
+          </div>
+          <div class="action-buttons" id="action-buttons"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= EVENT POPUP ======= -->
+  <div class="event-backdrop" id="event-backdrop"></div>
+  <div class="event-popup" id="event-popup">
+    <h3 id="event-title"></h3>
+    <div class="event-content">
+      <div class="event-text" id="event-text"></div>
+      <div class="event-flavor" id="event-flavor"></div>
+      <img id="event-card-img" class="event-card-img" src="" alt="">
+    </div>
+    <div class="event-buttons" id="event-buttons"></div>
+  </div>
+
+  <!-- ======= CARD IMAGE POPUP ======= -->
+  <div id="card-img-backdrop" class="card-img-backdrop"></div>
+  <div id="card-img-popup" class="card-img-popup" onclick="hideCardImagePopup()">
+    <img id="card-img-display" src="" alt="">
+  </div>
+
+  <!-- ======= GAME OVER SCREEN ======= -->
+  <div id="gameover-screen" class="screen">
+    <h1 class="gameover-title pixel-font" id="gameover-title"></h1>
+    <div class="winner-name pixel-font" id="winner-name"></div>
+    <div class="scoreboard" id="scoreboard"></div>
+    <button class="btn btn-pink btn-large" onclick="location.reload()"></button>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/board-data.js"></script>
+  <script src="js/board-positions.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
