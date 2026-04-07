@@ -538,6 +538,8 @@ function showJobSelection(availableJobs, callback) {
   overlay.appendChild(descPanel);
 
   let locked = false;
+  // Touch devices: use click-only (no hover) to prevent flickering from synthesized mouse events
+  const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
 
   availableJobs.forEach((job, i) => {
     const card = document.createElement('div');
@@ -559,27 +561,31 @@ function showJobSelection(availableJobs, callback) {
 
     if (job.locked) {
       card.classList.add('job-locked');
-      card.addEventListener('mouseenter', () => {
-        if (locked) return;
-        _showJobDescPanel(job, card, descPanel, lang, false, null, true);
-      });
-      card.addEventListener('mouseleave', () => {
-        if (locked) return;
-        descPanel.classList.remove('visible');
-      });
+      if (!isTouch) {
+        card.addEventListener('mouseenter', () => {
+          if (locked) return;
+          _showJobDescPanel(job, card, descPanel, lang, false, null, true);
+        });
+        card.addEventListener('mouseleave', () => {
+          if (locked) return;
+          descPanel.classList.remove('visible');
+        });
+      }
       card.addEventListener('click', () => {
         if (locked) return;
         _showJobDescPanel(job, card, descPanel, lang, true, null, true);
       });
     } else {
-      card.addEventListener('mouseenter', () => {
-        if (locked) return;
-        _showJobDescPanel(job, card, descPanel, lang, false, null, false);
-      });
-      card.addEventListener('mouseleave', () => {
-        if (locked) return;
-        descPanel.classList.remove('visible');
-      });
+      if (!isTouch) {
+        card.addEventListener('mouseenter', () => {
+          if (locked) return;
+          _showJobDescPanel(job, card, descPanel, lang, false, null, false);
+        });
+        card.addEventListener('mouseleave', () => {
+          if (locked) return;
+          descPanel.classList.remove('visible');
+        });
+      }
       card.addEventListener('click', () => {
         if (locked) return;
         locked = true;
