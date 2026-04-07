@@ -257,13 +257,18 @@ function placeTokens() {
   const scaleX = img.offsetWidth  / img.naturalWidth;
   const scaleY = img.offsetHeight / img.naturalHeight;
 
-  // Match game-header width to map+panel and center them
+  // Match game-header width to map+panel and center them (desktop only)
   const rightPanel = document.querySelector('.right-panel');
-  const totalW = img.offsetWidth + 4 + (rightPanel ? rightPanel.offsetWidth : 234);
   const gameHeader = document.querySelector('.game-header');
   const gameMain = document.querySelector('.game-main');
-  if (gameHeader) gameHeader.style.width = totalW + 'px';
-  if (gameMain) gameMain.style.width = totalW + 'px';
+  if (window.innerWidth > 768) {
+    const totalW = img.offsetWidth + 4 + (rightPanel ? rightPanel.offsetWidth : 234);
+    if (gameHeader) gameHeader.style.width = totalW + 'px';
+    if (gameMain) gameMain.style.width = totalW + 'px';
+  } else {
+    if (gameHeader) gameHeader.style.width = '';
+    if (gameMain) gameMain.style.width = '';
+  }
 
   gameState.players.forEach((player, pi) => {
     let token = document.getElementById(`token-p${pi}`);
@@ -654,21 +659,31 @@ function _showJobDescPanel(job, cardEl, panel, lang, withConfirm, confirmCb, isL
     document.getElementById('_jdp_btn').addEventListener('click', confirmCb);
   }
 
-  // Position panel: prefer right of card, fallback to left
-  const panelW = 215;
-  const margin = 14;
-  let left = rect.right + margin;
-  let fromRight = false;
-  if (left + panelW > window.innerWidth - 10) {
-    left = rect.left - panelW - margin;
-    fromRight = true;
-  }
-  let top = Math.max(10, rect.top - 10);
-  if (top + 280 > window.innerHeight) top = window.innerHeight - 290;
+  if (window.innerWidth <= 768) {
+    // Mobile: bottom sheet, centered
+    panel.style.left = '5%';
+    panel.style.top  = '';
+    panel.style.width = '90%';
+    panel.classList.remove('from-right');
+  } else {
+    // Desktop: position beside the card
+    const panelW = 215;
+    const margin = 14;
+    let left = rect.right + margin;
+    let fromRight = false;
+    if (left + panelW > window.innerWidth - 10) {
+      left = rect.left - panelW - margin;
+      fromRight = true;
+    }
+    let top = Math.max(10, rect.top - 10);
+    if (top + 280 > window.innerHeight) top = window.innerHeight - 290;
 
-  panel.style.left = left + 'px';
-  panel.style.top  = top  + 'px';
-  panel.classList.toggle('from-right', fromRight);
+    panel.style.left = left + 'px';
+    panel.style.top  = top  + 'px';
+    panel.style.width = '';
+    panel.classList.toggle('from-right', fromRight);
+  }
+
   panel.classList.add('visible');
 }
 

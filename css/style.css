@@ -1212,28 +1212,9 @@ h1, h2, h3, .pixel-font {
 .jdp-confirm { width: 100%; margin-top: 2px; }
 
 /* =============================================
-   RESPONSIVE
+   RESPONSIVE - TABLET (≤ 900px)
    ============================================= */
 @media (max-width: 900px) {
-  .game-main {
-    flex-direction: column;
-  }
-  .right-panel {
-    position: relative;
-    width: 100%;
-    bottom: auto;
-    border-left: none;
-    border-top: 2px solid;
-    border-color: var(--win-gray-light) var(--win-dark-shadow) var(--win-dark-shadow) var(--win-gray-light);
-  }
-  .side-panel {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .player-info-card {
-    flex: 1;
-    min-width: 220px;
-  }
   .board-square {
     width: 65px;
     height: 60px;
@@ -1248,24 +1229,203 @@ h1, h2, h3, .pixel-font {
   }
 }
 
-@media (max-width: 600px) {
+/* =============================================
+   RESPONSIVE - MOBILE (≤ 768px)
+   ============================================= */
+@media (max-width: 768px) {
+  /* Game screen: allow vertical scroll */
+  #game-screen {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  /* Override JS-set inline widths */
+  .game-header,
+  .game-main {
+    width: 100% !important;
+  }
+
+  /* Stack board then panel */
+  .game-main {
+    flex-direction: column;
+  }
+
+  /* Board fills full width */
+  .board-area {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Override inline styles set by JS */
+  #board-img-wrapper {
+    height: auto !important;
+    width: 100%;
+  }
+
+  /* Image scales by width, not height */
+  #board-img {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Right panel full width below board */
+  .right-panel {
+    width: 100% !important;
+    flex-direction: column;
+  }
+
+  /* Player cards: 2-column grid */
+  .side-panel {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .player-info-card {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 140px;
+  }
+
+  /* Touch-friendly buttons */
+  .btn {
+    min-height: 40px;
+    font-size: 14px;
+    padding: 6px 18px;
+  }
+  .btn:active {
+    padding: 7px 17px 5px 19px;
+  }
+  .btn-large {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  /* Bigger dice */
+  .dice {
+    width: 80px;
+    height: 80px;
+    font-size: 36px;
+  }
+
+  /* Path select: wrap per row */
+  .player-path-choice {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+  .player-name-row {
+    min-width: unset;
+  }
+  .path-selection {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  /* Event popup full width */
+  .event-popup {
+    width: 94%;
+    max-width: 94vw;
+  }
+
+  /* Popup card full width */
+  .popup-card {
+    width: 96%;
+  }
+
+  /* Job selection: smaller cards, more wrapping */
+  .job-card-img {
+    width: clamp(72px, calc((88vw - 40px) / 3), 110px);
+  }
+  .job-card-name-fallback {
+    width: clamp(72px, calc((88vw - 40px) / 3), 110px);
+    height: 140px;
+  }
+  .job-cards-row {
+    max-width: 94vw;
+    gap: 10px;
+  }
+
+  /* Job desc panel: bottom sheet */
+  .job-desc-panel {
+    bottom: 16px;
+    top: auto !important;
+    left: 5% !important;
+    width: 90%;
+    max-height: 55vh;
+    overflow-y: auto;
+    transform: translateY(12px);
+  }
+  .job-desc-panel.visible {
+    transform: translateY(0);
+  }
+  .job-desc-panel.from-right {
+    transform: translateY(12px);
+  }
+  .job-desc-panel.from-right.visible {
+    transform: translateY(0);
+  }
+
+  /* Spotlight: smaller ring / spread for smaller board */
+  #board-spotlight-ring {
+    width: 280px;
+    height: 280px;
+    box-shadow: 0 0 80px 1200px rgba(0, 0, 0, 0.78);
+  }
+
+  /* Scoreboard fits screen */
+  .scoreboard {
+    max-width: 100%;
+  }
+  .score-row {
+    grid-template-columns: 22px 1fr 52px 52px 52px 52px 52px;
+    font-size: 11px;
+    padding: 4px 4px;
+  }
+
+  /* Fanfare banner: fit on mobile */
+  .fanfare-banner {
+    font-size: 1em;
+    padding: 12px 20px;
+    white-space: normal;
+    text-align: center;
+    width: 80vw;
+  }
+}
+
+/* =============================================
+   RESPONSIVE - SMALL MOBILE (≤ 480px)
+   ============================================= */
+@media (max-width: 480px) {
   .board-square {
     width: 55px;
     height: 52px;
     font-size: 8px;
-  }
-  .btn {
-    font-size: 11px;
-    padding: 3px 10px;
   }
   .popup-card .card-text {
     font-size: 12px;
     margin: 4px;
     padding: 6px;
   }
+  .intro-title {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  /* Scoreboard: hide job & money→C columns on tiny screens */
   .score-row {
-    grid-template-columns: 22px 1fr 45px 45px 45px;
+    grid-template-columns: 18px 1fr 48px 44px 52px;
     font-size: 10px;
+  }
+  .score-row span:nth-child(3),
+  .score-row span:nth-child(5) {
+    display: none;
+  }
+
+  /* Player info: single column on very small */
+  .player-info-card {
+    flex: 1 1 100%;
   }
 }
 
