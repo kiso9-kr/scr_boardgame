@@ -552,33 +552,49 @@ function showJobSelection(availableJobs, callback) {
       card.appendChild(fallback);
     }
 
-    card.addEventListener('mouseenter', () => {
-      if (locked) return;
-      _showJobDescPanel(job, card, descPanel, lang, false, null);
-    });
-    card.addEventListener('mouseleave', () => {
-      if (locked) return;
-      descPanel.classList.remove('visible');
-    });
-    card.addEventListener('click', () => {
-      if (locked) return;
-      locked = true;
-
-      // Dim other cards, keep selected lit
-      row.querySelectorAll('.job-card-item').forEach(c => {
-        if (c !== card) c.classList.add('dimmed-out');
+    if (job.locked) {
+      card.classList.add('job-locked');
+      card.addEventListener('mouseenter', () => {
+        if (locked) return;
+        _showJobDescPanel(job, card, descPanel, lang, false, null, true);
       });
-      card.classList.add('selected-card');
-
-      // Show description with confirm button
-      _showJobDescPanel(job, card, descPanel, lang, true, () => {
-        overlay.classList.add('fade-out');
-        setTimeout(() => {
-          overlay.remove();
-          callback(job);
-        }, 420);
+      card.addEventListener('mouseleave', () => {
+        if (locked) return;
+        descPanel.classList.remove('visible');
       });
-    });
+      card.addEventListener('click', () => {
+        if (locked) return;
+        _showJobDescPanel(job, card, descPanel, lang, true, null, true);
+      });
+    } else {
+      card.addEventListener('mouseenter', () => {
+        if (locked) return;
+        _showJobDescPanel(job, card, descPanel, lang, false, null, false);
+      });
+      card.addEventListener('mouseleave', () => {
+        if (locked) return;
+        descPanel.classList.remove('visible');
+      });
+      card.addEventListener('click', () => {
+        if (locked) return;
+        locked = true;
+
+        // Dim other cards, keep selected lit
+        row.querySelectorAll('.job-card-item').forEach(c => {
+          if (c !== card) c.classList.add('dimmed-out');
+        });
+        card.classList.add('selected-card');
+
+        // Show description with confirm button
+        _showJobDescPanel(job, card, descPanel, lang, true, () => {
+          overlay.classList.add('fade-out');
+          setTimeout(() => {
+            overlay.remove();
+            callback(job);
+          }, 420);
+        }, false);
+      });
+    }
 
     row.appendChild(card);
   });
@@ -604,7 +620,7 @@ function showJobSelection(availableJobs, callback) {
   requestAnimationFrame(() => overlay.classList.add('active'));
 }
 
-function _showJobDescPanel(job, cardEl, panel, lang, withConfirm, confirmCb) {
+function _showJobDescPanel(job, cardEl, panel, lang, withConfirm, confirmCb, isLocked) {
   const rect = cardEl.getBoundingClientRect();
   const name = lang === 'ko' ? (job.name_ko || job.name) : job.name;
   const desc = lang === 'ko' ? job.description_ko : job.description_en;
@@ -613,9 +629,14 @@ function _showJobDescPanel(job, cardEl, panel, lang, withConfirm, confirmCb) {
     ? `<div class="jdp-bonus">+${job.respectBonus}C ${lang === 'ko' ? '(게임 종료 시)' : '(at end)'}</div>`
     : '';
   const descHTML = desc ? `<div class="jdp-desc">${desc}</div>` : '';
-  const confirmHTML = withConfirm
-    ? `<button class="btn btn-pink jdp-confirm" id="_jdp_btn">${lang === 'ko' ? '이 직업 선택하기!' : 'Choose this job!'}</button>`
-    : '';
+  let confirmHTML = '';
+  if (withConfirm) {
+    if (isLocked) {
+      confirmHTML = `<div class="jdp-locked-label">${lang === 'ko' ? '선택 불가!' : 'Not Available!'}</div>`;
+    } else {
+      confirmHTML = `<button class="btn btn-pink jdp-confirm" id="_jdp_btn">${lang === 'ko' ? '이 직업 선택하기!' : 'Choose this job!'}</button>`;
+    }
+  }
 
   panel.innerHTML = `
     <div class="jdp-name">${name}</div>
@@ -629,7 +650,7 @@ function _showJobDescPanel(job, cardEl, panel, lang, withConfirm, confirmCb) {
     ${confirmHTML}
   `;
 
-  if (withConfirm && confirmCb) {
+  if (withConfirm && !isLocked && confirmCb) {
     document.getElementById('_jdp_btn').addEventListener('click', confirmCb);
   }
 

@@ -13,6 +13,7 @@ const JOB_CARDS = [
     name: 'MC',
     name_ko: 'MC',
     isArtist: true,
+    requiresMusicSkill: true,
     diceForSalary: true,
     respectBonus: 0,
     grades: {

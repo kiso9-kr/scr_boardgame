@@ -110,6 +110,22 @@ function handleRollDice() {
   });
 }
 
+function _animateSteps(fromIndex, toIndex, onComplete) {
+  const player = gameState.players[gameState.currentPlayerIndex];
+  let currentStep = fromIndex;
+  const moveInterval = setInterval(() => {
+    currentStep++;
+    if (currentStep > toIndex) {
+      clearInterval(moveInterval);
+      player.pathIndex = toIndex;
+      onComplete();
+      return;
+    }
+    player.pathIndex = currentStep;
+    refreshGameUI();
+  }, 900);
+}
+
 function movePlayer(steps) {
   const player = gameState.players[gameState.currentPlayerIndex];
   let targetIndex = Math.min(player.pathIndex + steps, player.currentPath.length - 1);
@@ -123,26 +139,52 @@ function movePlayer(steps) {
     }
   }
 
-  // Show lantern spotlight
+  // Check if artist_7 is passed over without landing (artist path, no music skill yet)
+  let artist7PassIndex = -1;
+  if (player.initialPath === 'artist' && !player.masteredMusic) {
+    const a7Idx = player.currentPath.indexOf('artist_7');
+    if (a7Idx > player.pathIndex && a7Idx < targetIndex) {
+      artist7PassIndex = a7Idx;
+    }
+  }
+
   const token = document.getElementById(`token-p${gameState.currentPlayerIndex}`);
   if (token) token.classList.add('moving');
   showMovingSpotlight(gameState.currentPlayerIndex);
 
-  let currentStep = player.pathIndex;
-  const moveInterval = setInterval(() => {
-    currentStep++;
-    if (currentStep > targetIndex) {
-      clearInterval(moveInterval);
-      player.pathIndex = targetIndex;
+  if (artist7PassIndex > -1) {
+    // Move to artist_7, show warning popup, then continue to original target
+    _animateSteps(player.pathIndex, artist7PassIndex, () => {
+      if (token) token.classList.remove('moving');
+      hideMovingSpotlight();
+      refreshGameUI();
+      const lang = getLanguage();
+      showEventPopup(
+        '🎵',
+        lang === 'ko'
+          ? 'musical skill을 얻을 수 있는 칸에 도착하지 못했기 때문에 musical skill을 보유하지 못하였습니다. 직업 선택 시 제한이 생깁니다'
+          : 'You passed without landing on the musical skill tile and do not have musical skill. Job selection will be restricted.',
+        '',
+        [{ text: lang === 'ko' ? '닫기' : 'Close', action: () => {
+          if (token) token.classList.add('moving');
+          showMovingSpotlight(gameState.currentPlayerIndex);
+          _animateSteps(artist7PassIndex, targetIndex, () => {
+            if (token) token.classList.remove('moving');
+            hideMovingSpotlight();
+            refreshGameUI();
+            handleSquareLanding();
+          });
+        }}]
+      );
+    });
+  } else {
+    _animateSteps(player.pathIndex, targetIndex, () => {
       if (token) token.classList.remove('moving');
       hideMovingSpotlight();
       refreshGameUI();
       handleSquareLanding();
-      return;
-    }
-    player.pathIndex = currentStep;
-    refreshGameUI();
-  }, 900);
+    });
+  }
 }
 
 // =============================================
@@ -458,12 +500,21 @@ function getAvailableJobs(player, deck) {
 
 function handleChooseJob(player, square, flavor) {
   const lang = getLanguage();
-  const available = getAvailableJobs(player, [...gameState.jobCardDeck]);
+
+  let jobsToShow;
+  if (player.initialPath === 'artist' && !player.masteredMusic) {
+    // Show all artist jobs, but mark music-skill-required ones as locked
+    const allArtist = [...gameState.jobCardDeck].filter(j => j.isArtist);
+    const base = allArtist.length > 0 ? allArtist : createJobDeck().filter(j => j.isArtist);
+    jobsToShow = base.map(j => j.requiresMusicSkill ? Object.assign({}, j, { locked: true }) : j);
+  } else {
+    jobsToShow = getAvailableJobs(player, [...gameState.jobCardDeck]);
+  }
 
   showEventPopup('⭐', lang === 'ko' ? square.flavor_ko : square.flavor_en, '', [{
     text: t('draw_job'), class: 'btn-green', action: () => {
       hideEventPopup();
-      showJobSelection(available, (chosenJob) => {
+      showJobSelection(jobsToShow, (chosenJob) => {
         player.job = chosenJob;
         const deckIdx = gameState.jobCardDeck.findIndex(j => j.id === chosenJob.id);
         if (deckIdx >= 0) gameState.jobCardDeck.splice(deckIdx, 1);

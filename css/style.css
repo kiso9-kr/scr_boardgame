@@ -1130,6 +1130,25 @@ h1, h2, h3, .pixel-font {
   pointer-events: none;
   transition: transform 0.3s ease, filter 0.3s ease;
 }
+.job-card-item.job-locked {
+  cursor: pointer;
+  filter: brightness(0.35) saturate(0.2) grayscale(0.7);
+}
+.jdp-locked-label {
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  background: rgba(180, 0, 0, 0.85);
+  font-size: 1em;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+  padding: 8px 0;
+  border-radius: 6px;
+  margin-top: 8px;
+  letter-spacing: 0.05em;
+  cursor: default;
+}
 .job-card-item.selected-card {
   filter: brightness(1.05) saturate(1.1) drop-shadow(0 0 26px rgba(255, 200, 80, 0.9)) !important;
   transform: translateY(-18px) scale(1.07) !important;
