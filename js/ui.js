@@ -226,6 +226,33 @@ const TOKEN_OFFSETS = [
   { dx:   0, dy:   0 },
 ];
 
+// Compute available board height in px and apply directly to the image.
+// Avoids Safari's flex height:100% resolution bug.
+function _updateBoardSize() {
+  const img     = document.getElementById('board-img');
+  const wrapper = document.getElementById('board-img-wrapper');
+  if (!img) return;
+
+  if (window.innerWidth > 768) {
+    const gameScreen = document.getElementById('game-screen');
+    const header     = document.querySelector('.game-header');
+    if (!gameScreen) return;
+    const availH = gameScreen.offsetHeight
+                   - (header ? header.offsetHeight : 35)
+                   - 10; // 4px gap + 6px padding buffer
+    if (availH > 0) {
+      img.style.height = availH + 'px';
+      img.style.width  = 'auto';
+      if (wrapper) wrapper.style.height = availH + 'px';
+    }
+  } else {
+    // Mobile: CSS handles width-based sizing via media query overrides
+    img.style.height = '';
+    img.style.width  = '';
+    if (wrapper) wrapper.style.height = '';
+  }
+}
+
 function renderBoard() {
   const boardArea = document.getElementById('board-area');
 
@@ -233,18 +260,19 @@ function renderBoard() {
   if (!document.getElementById('board-img-wrapper')) {
     const wrapper = document.createElement('div');
     wrapper.id = 'board-img-wrapper';
-    wrapper.style.cssText = 'position: relative; height: 100%; line-height: 0;';
+    wrapper.style.cssText = 'position: relative; line-height: 0;';
 
     const img = document.createElement('img');
     img.id = 'board-img';
     img.src = 'assets/map.png';
-    img.style.cssText = 'display: block; height: 100%; width: auto;';
-    img.onload = placeTokens;
+    img.style.cssText = 'display: block;';
+    img.onload = () => { _updateBoardSize(); placeTokens(); };
 
     wrapper.appendChild(img);
     boardArea.insertBefore(wrapper, boardArea.firstChild);
   }
 
+  _updateBoardSize();
   placeTokens();
 }
 
@@ -957,6 +985,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 window.addEventListener('resize', () => {
   if (typeof gameState !== 'undefined' && gameState.players) {
+    _updateBoardSize();
     placeTokens();
   }
 });
