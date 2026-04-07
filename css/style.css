@@ -438,7 +438,7 @@ h1, h2, h3, .pixel-font {
   padding: 6px;
   gap: 4px;
   background: var(--win-bg);
-  align-items: stretch; /* override .screen.active's align-items: center */
+  /* align-items: center inherited from .screen.active — centers board+panel */
 }
 
 .game-header {
@@ -449,7 +449,7 @@ h1, h2, h3, .pixel-font {
   background: var(--win-gray);
   border: 2px solid;
   border-color: var(--win-gray-light) var(--win-dark-shadow) var(--win-dark-shadow) var(--win-gray-light);
-  width: 100%;
+  /* width set dynamically by JS to match board + panel */
 }
 
 .game-header .win-titlebar {
@@ -469,14 +469,14 @@ h1, h2, h3, .pixel-font {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  width: 100%;
+  /* width set dynamically by JS to match board + panel */
 }
 
 /* Board Area */
 .board-area {
-  flex: 1 1 0;
-  min-width: 0;
-  height: 100%; /* explicit height for Safari: resolves height:100% on children */
+  flex: 0 0 auto;
+  /* max-width prevents right panel from being pushed off-screen on narrow viewports */
+  max-width: calc(100vw - 12px - 4px - 230px);
   background: var(--win-bg);
   box-shadow: var(--border-sunken);
   padding: 0;

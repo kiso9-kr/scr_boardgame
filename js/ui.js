@@ -257,6 +257,24 @@ function placeTokens() {
   const scaleX = img.offsetWidth  / img.naturalWidth;
   const scaleY = img.offsetHeight / img.naturalHeight;
 
+  // Set game-header and game-main width to match board + right panel (desktop only)
+  // Uses board-area's actual offsetWidth (respects CSS max-width) so right panel is never clipped
+  if (window.innerWidth > 768) {
+    const boardArea = document.querySelector('.board-area');
+    const rightPanel = document.querySelector('.right-panel');
+    const boardW = boardArea ? boardArea.offsetWidth : img.offsetWidth;
+    const panelW = rightPanel ? rightPanel.offsetWidth : 234;
+    const totalW = boardW + 4 + panelW;
+    const gameHeader = document.querySelector('.game-header');
+    const gameMain   = document.querySelector('.game-main');
+    if (gameHeader) gameHeader.style.width = totalW + 'px';
+    if (gameMain)   gameMain.style.width   = totalW + 'px';
+  } else {
+    const gameHeader = document.querySelector('.game-header');
+    const gameMain   = document.querySelector('.game-main');
+    if (gameHeader) gameHeader.style.width = '';
+    if (gameMain)   gameMain.style.width   = '';
+  }
 
   gameState.players.forEach((player, pi) => {
     let token = document.getElementById(`token-p${pi}`);
